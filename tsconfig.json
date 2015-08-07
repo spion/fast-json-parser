@@ -1,0 +1,15 @@
+{
+    "compilerOptions": {
+        "module": "commonjs",
+        "noImplicitAny": true,
+        "outDir": "lib/",
+        "sourceMap": true,
+        "noLib": false,
+        "target": "es5",
+        "declaration": false
+    },
+    "filesGlob": [
+        "d.ts/**/*.d.ts",
+        "src/**/*.ts"
+    ]
+}

@@ -1,0 +1,22 @@
+{
+  "name": "json-parser",
+  "version": "1.0.0",
+  "description": "Fast streaming json parser",
+  "main": "lib/parser.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "json",
+    "stream",
+    "streaming",
+    "parser"
+  ],
+  "author": "spion",
+  "license": "ISC",
+  "devDependencies": {
+    "source-map-support": "^0.3.2",
+    "through": "^2.3.8",
+    "through2": "^2.0.0"
+  }
+}
