@@ -1,5 +1,6 @@
 var Parser = require('../lib/parser');
 var fuzz = require('../lib/test/fuzz');
+var json = JSON.stringify(require('./random.json'))
 
 function jsonParse(s) {
     return JSON.parse(s);
@@ -14,9 +15,6 @@ function test(p, sample, n) {
     }
     console.timeEnd(p.name);
 }
-var o = '';
-while (o.length < 1000 || o.length > 2000) {
-    o = JSON.stringify(fuzz.object());
-}
-test(jsonParse, o, 400000);
-test(parserParse, o, 400000);
+
+test(jsonParse, json, 20000);
+test(parserParse, json, 20000);
