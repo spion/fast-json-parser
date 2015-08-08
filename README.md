@@ -15,7 +15,9 @@ Install typescript then simply run `tsc` from the base dir
 
 Check out the benchmarks in the perf dir
 
-    node perf/big-bench.js
+    # node perf/big-bench.js
+    JSON.parse : 174ms
+    json-parser: 701ms
 
 # license
 
