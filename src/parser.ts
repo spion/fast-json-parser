@@ -14,16 +14,12 @@ const enum Mode {
     Separator
 }
 
-type StringOrObj = string | {}
-
-type ParserLike = NumParser | ConstParser | StringParser;
-
 function isWhitespace(code:number) {
     return code === Code.Whitespace || code === Code.Lf || code === Code.Cr;
 }
 
 class Parser {
-    public  numParser = new NumParser();
+    private numParser = new NumParser();
     private constParser = new ConstParser();
     private stringParser = new StringParser();
     private mode = Mode.Value
@@ -200,5 +196,3 @@ class Parser {
 }
 
 export = Parser
-
-//{"a": 1, "b": 2, "c": [1, {"a": 1, "b" :2}, {"d" : "345"}]}

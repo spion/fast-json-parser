@@ -10,6 +10,7 @@ export default class ConstParser {
         this.expect = null;
         this.val = null;
     }
+
     public init(code:number) {
         this.pos = 0;
         if (code === Code.T) {
@@ -25,6 +26,7 @@ export default class ConstParser {
             throw new Error("Invalid: " + String.fromCharCode(code))
         }
     }
+
     public advance(str:string, k:number) {
         this.pos += 1;
         if (this.pos >= this.expect.length)

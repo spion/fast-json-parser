@@ -1,4 +1,3 @@
-
 import {Code} from './code'
 
 const enum ParserState {
@@ -8,21 +7,24 @@ const enum ParserState {
 }
 
 export default class StringParser {
-    private state:ParserState;
-    private buffer: string;
-    private start: number;
-    private end: number;
-    private rest: string;
+    private state  : ParserState;
+    private buffer : string;
+    private start  : number;
+    private end    : number;
+    private rest   : string;
+
     constructor() {
         this.init('', 0);
     }
+
     public init(str:string, k:number) {
-        this.state = ParserState.Escaped;
+        this.state  = ParserState.Escaped;
         this.buffer = str;
-        this.start = this.end = k;
-        this.rest = null;
+        this.start  = this.end = k;
+        this.rest   = null;
         this.advance(str, k)
     }
+
     public advance(str:string, k:number) {
         if (this.state === ParserState.Ended) {
             return true;
@@ -45,6 +47,7 @@ export default class StringParser {
             this.state = ParserState.Normal;
         }
     }
+
     private handleBuffer(str: string) {
         if (this.buffer !== str) {
             if (this.rest === null) {
@@ -56,6 +59,7 @@ export default class StringParser {
         }
 
     }
+
     public value():string {
         var s:string;
         if (this.rest === null) {

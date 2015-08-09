@@ -12,12 +12,12 @@ export default class NumParser {
 
     init(str:string, k:number) {
         this.buffer = str;
-        this.start = this.end = k;
-        this.rest = null;
+        this.start  = this.end = k;
+        this.rest   = null;
     }
 
     public advance(str:string, k:number) {
-        var code = str.charCodeAt(k);
+        var code  = str.charCodeAt(k);
         var isNum = (code >= Code.Zero && code <= Code.Nine || code === Code.Dot);
         if (!isNum) { return true; }
         this.handleBuffer(str);
@@ -45,6 +45,4 @@ export default class NumParser {
         }
         return parseFloat(s)
     }
-
 }
-
