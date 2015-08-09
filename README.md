@@ -2,7 +2,7 @@
 
 Work in progress fast incremental (streaming) JSON parser for node
 
-About 3 times slower than buffering a node stream then parsing it with
+About 3.5 times slower than buffering a node stream then parsing it with
 JSON.parse
 
 Currently works on most valid JSON, however it also accepts invalid JSON
@@ -17,9 +17,9 @@ Install typescript then simply run `tsc` from the base dir
 Check out the benchmarks in the perf dir
 
     $ node perf/big-bench.js
-    jsonParse: 209ms
-    streamer: 609ms
-    oboe: 916ms
+    JSON.parse : 163ms
+    json-parser: 584ms
+    oboe       : 888ms
 
 # license
 
