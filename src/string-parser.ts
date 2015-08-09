@@ -18,21 +18,35 @@ export default class StringParser {
     }
 
     public init(str:string, k:number) {
-        this.state  = ParserState.Escaped;
-        this.buffer = str;
+        this.state  = ParserState.Normal;
+        this.buffer = null;
         this.start  = this.end = k;
         this.rest   = null;
-        this.advance(str, k)
     }
 
     public advance(str:string, k:number) {
         if (this.state === ParserState.Ended) {
             return true;
         }
-        this.handleBuffer(str)
+        this.handleBuffer(str, k)
         this.end = k;
         this.handleEscape(str, k)
         return false;
+    }
+
+    private handleBuffer(str: string, k:number) {
+        if (this.buffer !== str) {
+            if (this.buffer === null) {
+            }
+            else if (this.rest === null) {
+                this.rest = this.buffer.substring(this.start)
+            }
+            else {
+                this.rest += this.buffer.substring(this.start);
+            }
+            this.buffer = str;
+            this.start = k;
+        }
     }
 
     private handleEscape(str:string, k:number) {
@@ -40,33 +54,33 @@ export default class StringParser {
             var code = str.charCodeAt(k);
             if (code === Code.Quote) {
                 this.state = ParserState.Ended
-            } else if (code === Code.Escape) {
+            }
+            else if (code === Code.Escape) {
+                this.consolidate()
                 this.state = ParserState.Escaped;
             }
-        } else {
+        }
+        else {
             this.state = ParserState.Normal;
         }
     }
 
-    private handleBuffer(str: string) {
-        if (this.buffer !== str) {
-            if (this.rest === null) {
-                this.rest = this.buffer.substring(this.start)
-            } else {
-                this.rest += this.buffer;
-            }
-            this.buffer = str;
-        }
+    private consolidate() {
+        this.rest = this.currentContent();
+        this.buffer = null;
+    }
 
+    private currentContent() {
+        if (this.rest === null) {
+            return this.buffer.substring(this.start, this.end)
+        } else if (this.buffer !== null) {
+            return this.rest + this.buffer.substring(this.start, this.end)
+        } else {
+            return this.rest;
+        }
     }
 
     public value():string {
-        var s:string;
-        if (this.rest === null) {
-            s = this.buffer.substring(this.start, this.end + 1)
-        } else {
-            s = this.rest + this.buffer.substring(0, this.end + 1)
-        }
-        return JSON.parse(s)
+        return this.currentContent() //JSON.parse(this.currentContent())
     }
 }

@@ -15,6 +15,7 @@
   "author": "spion",
   "license": "ISC",
   "devDependencies": {
+    "oboe": "^2.1.2",
     "source-map-support": "^0.3.2",
     "through": "^2.3.8",
     "through2": "^2.0.0"

@@ -1,26 +1,37 @@
-var Parser = require('../lib/parser')
-var fs = require('fs');
+var Parser  = require('../lib/parser')
+var fs      = require('fs');
 var through = require('through2')
+var oboe    = require('oboe');
 
 console.time('jsonParse')
 
+function stream() {
+    return fs.createReadStream(__dirname + '/file.json', {encoding:'utf8'})
+}
+
 var d = '';
-fs.createReadStream(__dirname + '/file.json', {encoding: 'utf8'}).pipe(through(function(data, enc, done) {
+stream().pipe(through(function(data, enc, done) {
     if (data != null) d += data.toString();
     done()
 }, function() {
     JSON.parse(d);
     console.timeEnd('jsonParse')
+
+    var s = stream();
+    console.time('streamer')
     var p = new Parser();
     p.init()
-    console.time('streamer')
-    fs.createReadStream(__dirname + '/file.json', {encoding:'utf8'}).pipe(through(function(data, enc, done) {
-        //console.log(data.length)
-        if (data != null) p.push(data.toString());
-        done();
-    }, function(){
-        console.timeEnd('streamer')
-    }));
+    s.on('data', function(data) {
+        p.push(data)
+    });
+    s.on('end', function() {
+       console.timeEnd('streamer');
+        var ss = stream();
+        console.time('oboe')
+        oboe(ss).done(function(data) {
+          console.timeEnd('oboe')
+        });
+    })
 }));
 
 setTimeout(function(){}, 1000)

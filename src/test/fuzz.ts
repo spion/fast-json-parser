@@ -11,7 +11,7 @@ export function number() {
     }
 }
 
-var sTable = '\\"`1234567890!@#$xcvb::\\""asdfghjk\'\'';
+var sTable = '\\"`1234567890!@#$::\\""\'\'qwertyuiopasdfghjklzxcvbnm';
 
 export function string() {
     var n = int(0, 20), s = ''

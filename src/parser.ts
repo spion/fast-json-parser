@@ -34,6 +34,19 @@ class Parser {
         this.stack = [];
     }
 
+    static parse(s:string) {
+        var p = new Parser();
+        p.init();
+        p.push(s)
+        return p.value;
+    }
+
+    public push(str:string) {
+        for (var k = 0; k < str.length; ++k) {
+            this.advance(str, k);
+        }
+    }
+
     public advance(str: string, k: number) {
         switch (this.mode) {
             case Mode.PrimitiveKey: this.parsePrimitiveKeyStr(str, k); break;
@@ -46,38 +59,6 @@ class Parser {
             case Mode.Colon: this.parseColon(str, k); break;
         }
     }
-
-    public push(str:string) {
-        for (var k = 0; k < str.length; ++k) {
-            this.advance(str, k);
-        }
-    }
-
-    static parse(s:string) {
-        var p = new Parser();
-        p.init();
-        p.push(s)
-        return p.value;
-    }
-
-    private open(arg:string|{}) {
-        if (this.value !== undefined) {
-            this.stack.push(this.value)
-        }
-        this.value = arg;
-    }
-    private close() {
-        if (this.stack.length < 1) return;
-        var stackItem = this.stack.pop();
-        if (stackItem instanceof Array) {
-            stackItem.push(this.value)
-        } else {
-            stackItem[this.keys.pop()] = this.value;
-        }
-        this.value = stackItem;
-        this.mode = Mode.Separator
-    }
-
 
     private parseValue = function(str:string, k:number) {
         var code = str.charCodeAt(k);
@@ -108,6 +89,26 @@ class Parser {
             throw new Error("Unexpected " + str[k] + " at: " + k + " : " + str.substring(k - 5, k + 5));
         }
     }
+
+    private open(arg:string|{}) {
+        if (this.value !== undefined) {
+            this.stack.push(this.value)
+        }
+        this.value = arg;
+    }
+
+    private close() {
+        if (this.stack.length < 1) return;
+        var stackItem = this.stack.pop();
+        if (stackItem instanceof Array) {
+            stackItem.push(this.value)
+        } else {
+            stackItem[this.keys.pop()] = this.value;
+        }
+        this.value = stackItem;
+        this.mode = Mode.Separator
+    }
+
     private parseKey(str:string, k:number) {
         var code = str.charCodeAt(k);
         if (code === Code.Quote) {
@@ -121,6 +122,7 @@ class Parser {
             throw new Error("Unexpected " + str[k] + " at: " + k + " : " + str.substring(k - 5, k + 5));
         }
     }
+
     private parseColon(str:string, k:number) {
         var code = str.charCodeAt(k);
         if (code === Code.Colon) {
@@ -130,25 +132,21 @@ class Parser {
             throw new Error("Unexpected " + str[k] + " at: " + k + " : " + str.substring(k - 5, k + 5));
         }
     }
+
     private parseSeparator(str:string, k:number) {
         var code = str.charCodeAt(k);
+        var isArray = this.value instanceof Array;
         if (code === Code.Comma) {
-            this.mode = Mode.Value;
-            if (this.value instanceof Array) {
-                this.mode = Mode.Value
-            } else {
-                this.mode = Mode.Key
-            }
+            this.mode = isArray ? Mode.Value : Mode.Key
         }
-        else if ((this.value instanceof Array && code === Code.RBracket)
-            || (!(this.value instanceof Array) && code === Code.RBrace)) {
+        else if (isArray && code === Code.RBracket
+            || (!isArray && code === Code.RBrace)) {
             this.close()
         }
         else if (!isWhitespace(code)) {
             throw new Error("Unexpected " + str[k] + " at: " + k + " : " + str.substring(k - 5, k + 5));
         }
     }
-
 
     private parsePrimitiveKeyStr(str:string, k:number) {
         if (this.stringParser.advance(str, k)) {
@@ -160,7 +158,7 @@ class Parser {
 
     private parsePrimitiveStr(str:string, k:number) {
         if (this.stringParser.advance(str, k)) {
-            if ( this.value instanceof Array) {
+            if (this.value instanceof Array) {
                 this.value.push(this.stringParser.value())
             } else {
                 this.value[this.keys.pop()] = this.stringParser.value()
@@ -172,7 +170,7 @@ class Parser {
 
     private parsePrimitiveNum(str:string, k:number) {
         if (this.numParser.advance(str, k)) {
-            if ( this.value instanceof Array) {
+            if (this.value instanceof Array) {
                 this.value.push(this.numParser.value())
             } else {
                 this.value[this.keys.pop()] = this.numParser.value()
