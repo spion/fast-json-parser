@@ -8,7 +8,7 @@ var s1 = ', -12.3'
 var s2 = '45, '
 
 function exerciseN() {
-    np.init(s1, 2)
+    np.init(s1.charCodeAt(2))
     np.advance(s1, 3)
     np.advance(s1, 4)
     np.advance(s1, 5)

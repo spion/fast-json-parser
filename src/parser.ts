@@ -71,7 +71,7 @@ class Parser {
             this.mode = Mode.Value
         }
         else if ((code >= Code.Zero && code <= Code.Nine) || code === Code.Minus) {
-            this.numParser.init(str, k)
+            this.numParser.init(code)
             this.mode = Mode.PrimitiveNumber;
         }
         else if (code === Code.T || code === Code.F || code === Code.N) {
