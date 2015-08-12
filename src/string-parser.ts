@@ -3,6 +3,7 @@ import {Code} from './code'
 const enum ParserState {
     Normal,
     Escaped,
+    Unicode,
     Ended
 }
 
@@ -12,6 +13,9 @@ export default class StringParser {
     private start  : number;
     private end    : number;
     private rest   : string;
+
+    private unicode: number;
+    private digitCount: number;
 
     constructor() {
         this.init('', 0);
@@ -28,46 +32,78 @@ export default class StringParser {
         if (this.state === ParserState.Ended) {
             return true;
         }
-        this.handleBuffer(str, k)
-        this.end = k;
+        if (this.state === ParserState.Normal) {
+            this.handleBuffer(str, k);
+        }
         this.handleEscape(str, k)
         return false;
     }
 
     private handleBuffer(str: string, k:number) {
         if (this.buffer !== str) {
-            if (this.buffer === null) {
-            }
-            else if (this.rest === null) {
-                this.rest = this.buffer.substring(this.start)
-            }
-            else {
-                this.rest += this.buffer.substring(this.start);
+            if (this.buffer !== null) {
+                if (this.rest === null) {
+                    this.rest = this.buffer.substring(this.start)
+                }
+                else {
+                    this.rest += this.buffer.substring(this.start);
+                }
             }
             this.buffer = str;
             this.start = k;
         }
+        this.end = k;
     }
 
     private handleEscape(str:string, k:number) {
-        if (this.state !== ParserState.Escaped) {
-            var code = str.charCodeAt(k);
+        var code = str.charCodeAt(k);
+        if (this.state === ParserState.Normal) {
             if (code === Code.Quote) {
                 this.state = ParserState.Ended
             }
             else if (code === Code.Escape) {
-                this.consolidate()
+                this.consolidate();
                 this.state = ParserState.Escaped;
             }
+        } else if (this.state === ParserState.Escaped) {
+            if (code === Code.U) {
+                this.state = ParserState.Unicode
+                this.unicode = 0;
+                this.digitCount = 0;
+            } else {
+                var char = this.translate(code)
+                if (char !== null) { // translation found
+                    this.rest += char;
+                    this.buffer = null;
+                } else { // reset as if backslash never existed
+                    this.start = k;
+                }
+                this.state = ParserState.Normal
+            }
+        } else {
+            //TODO handle nondigit case
+            this.unicode = this.unicode * 16 + (code - Code.Zero)
+            if (++this.digitCount === 4) {
+                this.state = ParserState.Normal
+                this.rest += String.fromCharCode(this.unicode);
+                this.buffer = null;
+            }
         }
-        else {
-            this.state = ParserState.Normal;
+    }
+
+    private translate(code: number) {
+        switch (code) {
+            case Code.B: return "\b"
+            case Code.F: return "\f"
+            case Code.N: return "\n"
+            case Code.R: return "\r"
+            case Code.T: return "\t"
+            default: return null;
         }
     }
 
     private consolidate() {
         this.rest = this.currentContent();
-        this.buffer = null;
     }
 
     private currentContent() {

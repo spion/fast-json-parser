@@ -2,6 +2,7 @@ import NumParser    from './num-parser'
 import StringParser from './string-parser'
 import ConstParser  from './const-parser'
 import {Code}       from './code'
+import {Queue}      from './queue'
 
 const enum Mode {
     Value,
@@ -23,15 +24,15 @@ class Parser {
     private constParser = new ConstParser();
     private stringParser = new StringParser();
     private mode = Mode.Value
-    private stack: any[] = [];
+    private stack:Queue<any>
+    private keys:Queue<string>;
 
-    private keys:string[] = [];
     private value: any;
 
     public init(str?: string, k?: number) {
-        this.keys = [];
+        this.keys = new Queue<any>(4);
         this.mode = Mode.Value;
-        this.stack = [];
+        this.stack = new Queue<any>(8);
     }
 
     static parse(s:string) {
@@ -49,18 +50,18 @@ class Parser {
 
     public advance(str: string, k: number) {
         switch (this.mode) {
-            case Mode.PrimitiveKey: this.parsePrimitiveKeyStr(str, k); break;
-            case Mode.PrimitiveString: this.parsePrimitiveStr(str, k); break;
-            case Mode.PrimitiveNumber: this.parsePrimitiveNum(str, k); break;
-            case Mode.PrimitiveOther: this.parsePrimitiveOther(str, k); break;
-            case Mode.Value: this.parseValue(str, k); break;
-            case Mode.Separator: this.parseSeparator(str, k); break;
-            case Mode.Key: this.parseKey(str, k); break;
-            case Mode.Colon: this.parseColon(str, k); break;
+            case Mode.PrimitiveKey    : this.parsePrimitiveKeyStr(str, k); break;
+            case Mode.PrimitiveString : this.parsePrimitiveStr(str, k); break;
+            case Mode.PrimitiveNumber : this.parsePrimitiveNum(str, k); break;
+            case Mode.PrimitiveOther  : this.parsePrimitiveOther(str, k); break;
+            case Mode.Value           : this.parseValue(str, k); break;
+            case Mode.Separator       : this.parseSeparator(str, k); break;
+            case Mode.Key             : this.parseKey(str, k); break;
+            case Mode.Colon           : this.parseColon(str, k); break;
         }
     }
 
-    private parseValue = function(str:string, k:number) {
+    private parseValue(str:string, k:number) {
         var code = str.charCodeAt(k);
         if (code === Code.LBrace) {
             this.open({});
@@ -103,10 +104,11 @@ class Parser {
         if (stackItem instanceof Array) {
             stackItem.push(this.value)
         } else {
-            stackItem[this.keys.pop()] = this.value;
+            var key = this.keys.pop()
+            stackItem[key] = this.value;
         }
-        this.value = stackItem;
         this.mode = Mode.Separator
+        this.value = stackItem;
     }
 
     private parseKey(str:string, k:number) {
@@ -150,19 +152,25 @@ class Parser {
 
     private parsePrimitiveKeyStr(str:string, k:number) {
         if (this.stringParser.advance(str, k)) {
-            this.keys.push(this.stringParser.value());
+            var key = this.stringParser.value()
+            this.keys.push(key);
             this.mode = Mode.Colon;
             this.parseColon(str, k)
         }
     }
 
+    private addToContainer(value:any) {
+        if (this.value instanceof Array) {
+            this.value.push(value)
+        } else {
+            var key = this.keys.pop();
+            this.value[key] = value
+        }
+    }
+
     private parsePrimitiveStr(str:string, k:number) {
         if (this.stringParser.advance(str, k)) {
-            if (this.value instanceof Array) {
-                this.value.push(this.stringParser.value())
-            } else {
-                this.value[this.keys.pop()] = this.stringParser.value()
-            }
+            this.addToContainer(this.stringParser.value())
             this.mode = Mode.Separator
             this.parseSeparator(str, k)
         }
@@ -170,11 +178,7 @@ class Parser {
 
     private parsePrimitiveNum(str:string, k:number) {
         if (this.numParser.advance(str, k)) {
-            if (this.value instanceof Array) {
-                this.value.push(this.numParser.value())
-            } else {
-                this.value[this.keys.pop()] = this.numParser.value()
-            }
+            this.addToContainer(this.numParser.value())
             this.mode = Mode.Separator
             this.parseSeparator(str, k)
         }
@@ -182,11 +186,7 @@ class Parser {
 
     private parsePrimitiveOther(str:string, k:number) {
         if (this.constParser.advance(str, k)) {
-            if (this.value instanceof Array) {
-                this.value.push(this.constParser.value())
-            } else {
-                this.value[this.keys.pop()] = this.constParser.value()
-            }
+            this.addToContainer(this.constParser.value())
             this.mode = Mode.Separator
             this.parseSeparator(str, k)
         }

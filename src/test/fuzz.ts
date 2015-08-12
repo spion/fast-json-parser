@@ -11,10 +11,10 @@ export function number() {
     }
 }
 
-var sTable = '\\"`1234567890!@#$::\\""\'\'qwertyuiopasdfghjklzxcvbnm';
+var sTable = '\\"`1234567890!@#$::\\""\'\'qwertyuiopasdfghjklzxcvbnm\r\n\t\a';
 
 export function string() {
-    var n = int(0, 20), s = ''
+    var n = int(0, 20) * int(0, 5), s = ''
     for (var k = 0; k < n; ++k) {
         s += sTable[int(0, sTable.length - 1)]
     }

@@ -91,6 +91,6 @@ function testCP() {
     console.timeEnd('JSON.parse');
 }
 
-testCP()
-testNP();
+//testCP()
+//testNP();
 testSP();

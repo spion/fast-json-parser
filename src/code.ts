@@ -21,7 +21,11 @@ export var Code = {
     T: cc('t'),
     F: cc('f'),
     N: cc('n'),
+    R: cc('r'),
+    B: cc('b'),
+    U: cc('u'),
     Escape: cc('\\'),
+    Slash: cc('/'),
     Whitespace: cc(' '),
     Lf: cc("\n"),
     Cr: cc("\r")

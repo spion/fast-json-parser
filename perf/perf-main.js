@@ -16,5 +16,5 @@ function test(p, sample, n) {
     console.timeEnd(p.name);
 }
 
-//test(jsonParse, json, 20000);
+test(jsonParse, json, 20000);
 test(parserParse, json, 20000);
