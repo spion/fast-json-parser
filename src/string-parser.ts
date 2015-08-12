@@ -32,10 +32,42 @@ export default class StringParser {
         if (this.state === ParserState.Ended) {
             return true;
         }
-        if (this.state === ParserState.Normal) {
-            this.handleBuffer(str, k);
+        var code = str.charCodeAt(k);
+        switch (this.state) {
+            case ParserState.Normal:
+                this.handleBuffer(str, k);
+                if (code === Code.Quote) {
+                    this.state = ParserState.Ended
+                }
+                else if (code === Code.Escape) {
+                    this.consolidate();
+                    this.state = ParserState.Escaped;
+                }
+                break;
+            case ParserState.Escaped:
+                if (code === Code.U) {
+                    this.state = ParserState.Unicode
+                    this.unicode = 0;
+                    this.digitCount = 0;
+                } else {
+                    var char = this.translate(code)
+                    if (char !== null) { // translation found
+                        this.rest += char;
+                        this.buffer = null;
+                    } else { // reset as if backslash never existed
+                        this.start = k;
+                    }
+                    this.state = ParserState.Normal
+                }
+                break;
+            default:
+                this.unicode = this.unicode * 16 + (code - Code.Zero)
+                if (++this.digitCount === 4) {
+                    this.state = ParserState.Normal
+                    this.rest += String.fromCharCode(this.unicode);
+                    this.buffer = null;
+                }
         }
-        this.handleEscape(str, k)
         return false;
     }
 
@@ -53,42 +85,6 @@ export default class StringParser {
             this.start = k;
         }
         this.end = k;
-    }
-
-    private handleEscape(str:string, k:number) {
-        var code = str.charCodeAt(k);
-        if (this.state === ParserState.Normal) {
-            if (code === Code.Quote) {
-                this.state = ParserState.Ended
-            }
-            else if (code === Code.Escape) {
-                this.consolidate();
-                this.state = ParserState.Escaped;
-            }
-        } else if (this.state === ParserState.Escaped) {
-            if (code === Code.U) {
-                this.state = ParserState.Unicode
-                this.unicode = 0;
-                this.digitCount = 0;
-            } else {
-                var char = this.translate(code)
-                if (char !== null) { // translation found
-                    this.rest += char;
-                    this.buffer = null;
-                } else { // reset as if backslash never existed
-                    this.start = k;
-                }
-                this.state = ParserState.Normal
-            }
-        } else {
-            //TODO handle nondigit case
-            this.unicode = this.unicode * 16 + (code - Code.Zero)
-            if (++this.digitCount === 4) {
-                this.state = ParserState.Normal
-                this.rest += String.fromCharCode(this.unicode);
-                this.buffer = null;
-            }
-        }
     }
 
     private translate(code: number) {

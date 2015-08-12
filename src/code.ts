@@ -6,27 +6,27 @@ export var Constants = {
     False: [].map.call('false', cc)
 }
 
-export var Code = {
-    LBrace: cc('{'),
-    RBrace: cc('}'),
-    LBracket: cc('['),
-    RBracket: cc(']'),
-    Quote: cc('"'),
-    Colon: cc(':'),
-    Comma: cc(','),
-    Minus: cc('-'),
-    Zero: cc('0'),
-    Nine: cc('9'),
-    Dot: cc('.'),
-    T: cc('t'),
-    F: cc('f'),
-    N: cc('n'),
-    R: cc('r'),
-    B: cc('b'),
-    U: cc('u'),
-    Escape: cc('\\'),
-    Slash: cc('/'),
-    Whitespace: cc(' '),
-    Lf: cc("\n"),
-    Cr: cc("\r")
-};
+export const enum Code {
+    LBrace = 123,
+    RBrace = 125,
+    LBracket = 91,
+    RBracket = 93,
+    Quote = 34,
+    Colon = 58,
+    Comma = 44,
+    Minus = 45,
+    Zero = 48,
+    Nine = 57,
+    Dot = 46,
+    T = 116,
+    F = 102,
+    N = 110,
+    R = 114,
+    B = 98,
+    U = 117,
+    Escape = 92,
+    Slash = 47,
+    Whitespace = 32,
+    Lf = 10,
+    Cr = 13
+ }
