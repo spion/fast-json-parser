@@ -16,7 +16,10 @@ describe("parser", () => {
           // let secondString = JSON.stringify(ourParser, null, 2);
           // expect(oString).toEqual(secondString);
         }
-      )
+      ),
+      {
+        numRuns: 5000
+      }
     );
   });
 });
