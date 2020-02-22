@@ -26,7 +26,10 @@ A static convenience method is available for node streams:
 ```typescript
 import { Parser } from "incremental-json-parser";
 
-Parser.parseStream(stream);
+async function test() {
+  let result = await Parser.parseStream(stream);
+  console.log(result);
+}
 ```
 
 Or you can use the raw API:

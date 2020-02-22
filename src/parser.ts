@@ -43,8 +43,8 @@ export class Parser {
     return p.value;
   }
 
-  static parseStream(stream: { on(event: string, fn: Function): any }) {
-    return new Promise((resolve, reject) => {
+  static parseStream<T>(stream: { on(event: string, fn: Function): any }) {
+    return new Promise<T>((resolve, reject) => {
       let p = new Parser();
       p.init();
       stream.on("data", (data: string) => p.push(data));
