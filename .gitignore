@@ -1,6 +1,5 @@
-lib
+/lib
 node_modules
-prof.txt
 .vscode
 isolate*.log
 yarn.lock

@@ -34,6 +34,9 @@ export class NumParser {
   private exponent: number = 1;
   private divisor: number = 1;
 
+  private fallbackCharcodes = new Array(64).fill(-1);
+  private fallbackPosition = 0;
+
   init(code: number) {
     this.mode = Mode.Normal;
 
@@ -48,6 +51,8 @@ export class NumParser {
     this.divisor = 1;
     this.exponent = 0;
     this.hasExponent = Exponent.None;
+    this.fallbackPosition = 0;
+    this.fallbackCharcodes[this.fallbackPosition] = code;
   }
 
   public advance(str: string, k: number) {
@@ -103,25 +108,26 @@ export class NumParser {
         }
         break;
     }
+    this.fallbackCharcodes[++this.fallbackPosition] = code;
     return false;
   }
 
-  public value() {
-    if (this.hasExponent === Exponent.Negative) this.exponent = 0 - this.exponent;
-
-    if (this.divisor > 100000000000 || this.exponent > 323) {
-      let digits = Math.ceil(Math.log(this.divisor) / Math.log(10));
-      let whole = this.whole;
-      if (this.isNegative) whole = 0 - whole;
-      let numString =
-        whole.toString() +
-        "." +
-        this.reminder.toString().padStart(digits, "0") +
-        (this.hasExponent ? "e" + this.exponent.toString() : "");
-      // console.log("Slowpath on", numString);
-      // Slow path, floating point arithmetic failure
-      return Number(numString);
+  private fallback() {
+    let s = "";
+    for (let k = 0; k <= this.fallbackPosition; ++k) {
+      s += String.fromCharCode(this.fallbackCharcodes[k]);
     }
+
+    return Number(s);
+  }
+
+  public value() {
+    if (this.divisor > 10000000000000 || this.exponent > 323) {
+      // Slow path, floating point arithmetic failure
+      return this.fallback();
+    }
+
+    if (this.hasExponent === Exponent.Negative) this.exponent = 0 - this.exponent;
     let val = this.whole + this.reminder / this.divisor;
     if (this.isNegative) val = 0 - val;
     if (this.hasExponent > 0) val = val * Math.pow(10, this.exponent);

@@ -35,41 +35,53 @@ export class StringParser {
     var code = str.charCodeAt(k);
     switch (this.state) {
       case ParserState.Normal:
-        this.handleBuffer(str, k);
-        if (code === Code.Quote) {
-          this.state = ParserState.Ended;
-        } else if (code === Code.Escape) {
-          this.consolidate();
-          this.state = ParserState.Escaped;
-        }
+        this.parseNormal(str, code, k);
         break;
       case ParserState.Escaped:
-        if (code === Code.U) {
-          this.state = ParserState.Unicode;
-          this.unicode = 0;
-          this.digitCount = 0;
-        } else {
-          var char = this.translate(code);
-          if (char !== null) {
-            // translation found
-            this.rest += char;
-            this.buffer = null;
-          } else {
-            // reset as if backslash never existed
-            this.start = k;
-          }
-          this.state = ParserState.Normal;
-        }
+        this.parseEscaped(code, k);
         break;
       case ParserState.Unicode:
-        this.unicode = this.unicode * 16 + (code - Code.Zero);
-        if (++this.digitCount === 4) {
-          this.state = ParserState.Normal;
-          this.rest += String.fromCharCode(this.unicode);
-          this.buffer = null;
-        }
+        this.parseUnicode(code, k);
     }
     return false;
+  }
+
+  private parseNormal(str: string, code: number, k: number) {
+    this.handleBuffer(str, k);
+    if (code === Code.Quote) {
+      this.state = ParserState.Ended;
+    } else if (code === Code.Escape) {
+      this.consolidate();
+      this.state = ParserState.Escaped;
+    }
+  }
+
+  private parseEscaped(code: number, k: number) {
+    if (code === Code.U) {
+      this.state = ParserState.Unicode;
+      this.unicode = 0;
+      this.digitCount = 0;
+    } else {
+      var char = this.translate(code);
+      if (char !== null) {
+        // translation found
+        this.rest += char;
+        this.buffer = null;
+      } else {
+        // reset as if backslash never existed
+        this.start = k;
+      }
+      this.state = ParserState.Normal;
+    }
+  }
+
+  private parseUnicode(code: number, k: number) {
+    this.unicode = this.unicode * 16 + (code - Code.Zero);
+    if (++this.digitCount === 4) {
+      this.state = ParserState.Normal;
+      this.rest += String.fromCharCode(this.unicode);
+      this.buffer = null;
+    }
   }
 
   private handleBuffer(str: string, k: number) {

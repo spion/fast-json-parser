@@ -15,7 +15,11 @@
   "jest": {
     "transform": {
       "^.+\\.ts?$": "ts-jest"
-    }
+    },
+    "testPathIgnorePatterns": [
+      "node_modules",
+      "/lib"
+    ]
   },
   "author": "spion",
   "license": "ISC",
