@@ -2,7 +2,7 @@
 
 Work in progress fast incremental (streaming) JSON parser for node
 
-About 3.3 times slower than buffering a node stream then parsing it with
+About 3.5 times slower than buffering a node stream then parsing it with
 JSON.parse
 
 Currently works on most valid JSON, however it also accepts invalid JSON.
