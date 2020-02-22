@@ -43,6 +43,16 @@ export class Parser {
     return p.value;
   }
 
+  static parseStream(stream: { on(event: string, fn: Function): any }) {
+    return new Promise((resolve, reject) => {
+      let p = new Parser();
+      p.init();
+      stream.on("data", (data: string) => p.push(data));
+      stream.on("end", () => resolve(p.value));
+      stream.on("error", reject);
+    });
+  }
+
   public push(str: string) {
     for (var k = 0; k < str.length; ++k) {
       this.advance(str, k);

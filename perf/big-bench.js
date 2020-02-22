@@ -28,17 +28,8 @@ function testOboe() {
   });
 }
 
-function testThisParser() {
-  return new Promise(resolve => {
-    let s = stream();
-    let p = new Parser();
-    p.init();
-    s.on("data", function(data) {
-      p.push(data);
-    }).on("end", function() {
-      resolve(p.value);
-    });
-  });
+function testFastJsonParser() {
+  return Parser.parseStream(stream());
 }
 
 function testBaseline() {
@@ -55,9 +46,10 @@ function testBaseline() {
 
 let parsers = [
   //TODO: add more tests
-  testOboe,
+
   testJSONParse,
-  testThisParser,
+  testOboe,
+  testFastJsonParser,
   testBaseline
 ];
 

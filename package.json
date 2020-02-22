@@ -1,7 +1,7 @@
 {
-  "name": "json-parser",
+  "name": "fast-json-parser",
   "version": "1.0.0",
-  "description": "Fast streaming json parser",
+  "description": "Fast incremental json parser",
   "main": "lib/parser.js",
   "scripts": {
     "test": "jest"
