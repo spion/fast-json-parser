@@ -32,28 +32,26 @@ function testFastJsonParser() {
   return Parser.parseStream(stream());
 }
 
-function testBaseline() {
-  return new Promise(resolve => {
-    let s = stream();
-    let p = [];
-    s.on("data", function(data) {
-      p.push(data);
-    }).on("end", function() {
-      resolve(p);
-    });
-  });
-}
-
 let parsers = [
   //TODO: add more tests
 
   testJSONParse,
   testOboe,
-  testFastJsonParser,
-  testBaseline
+  testFastJsonParser
 ];
 
 async function test() {
+  let val = null;
+  // Verify stage
+  for (let parser of parsers) {
+    if (!val) vals = await parser();
+    else expect(await parser()).toEqual(val);
+  }
+  // Warmup stage
+  for (let parser of parsers) {
+    for (let k = 0; k < 3; ++k) await parser();
+  }
+
   for (let parser of parsers) {
     console.time(parser.name);
     for (let k = 0; k < 10; ++k) await parser();
