@@ -1,10 +1,12 @@
 var Parser = require("../lib/parser").Parser;
-var json = JSON.stringify(require("./random.json"));
+//var json = JSON.stringify(require("./random.json"));
 
-function jsonParse(s) {
+let json = JSON.stringify(new Array(1000000).fill(0.12312312312312315));
+
+function JSONParse(s) {
   return JSON.parse(s);
 }
-function parserParse(s) {
+function fastParserParse(s) {
   return Parser.parse(s);
 }
 function test(p, sample, n) {
@@ -15,5 +17,5 @@ function test(p, sample, n) {
   console.timeEnd(p.name);
 }
 
-test(jsonParse, json, 20000);
-test(parserParse, json, 20000);
+test(JSONParse, json, 5);
+test(fastParserParse, json, 5);

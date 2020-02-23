@@ -113,12 +113,9 @@ export class NumParser {
   }
 
   private fallback() {
-    let s = "";
-    for (let k = 0; k <= this.fallbackPosition; ++k) {
-      s += String.fromCharCode(this.fallbackCharcodes[k]);
-    }
-
-    return Number(s);
+    return Number(
+      String.fromCharCode.apply(String, this.fallbackCharcodes.slice(0, this.fallbackPosition + 1))
+    );
   }
 
   public value() {

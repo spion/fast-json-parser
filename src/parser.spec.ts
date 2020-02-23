@@ -13,12 +13,10 @@ describe("parser", () => {
           let ourParser = Parser.parse(oString);
           let goodParser = JSON.parse(oString);
           expect(ourParser).toEqual(goodParser);
-          // let secondString = JSON.stringify(ourParser, null, 2);
-          // expect(oString).toEqual(secondString);
         }
       ),
       {
-        numRuns: 5000
+        numRuns: 1000
       }
     );
   });
