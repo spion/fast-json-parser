@@ -41,7 +41,8 @@ function parseStream(stream) {
   return new Promise(resolve => {
     let p = new Parser();
     p.init();
-    stream.on("data", data => p.push(data)).on("end", () => resolve(p.value));
+    stream.on("data", data => p.push(data))
+    stream.on("end", () => resolve(p.value));
   });
 }
 ```
