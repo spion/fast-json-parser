@@ -23,8 +23,8 @@ export class StringParser {
 
   public init(str: string, k: number) {
     this.state = ParserState.Normal;
-    this.buffer = null;
-    this.start = this.end = k;
+    this.buffer = str;
+    this.start = this.end = k + 1;
     this.rest = null;
   }
 
@@ -46,8 +46,20 @@ export class StringParser {
     return false;
   }
 
+  public switchString(str: string) {
+    if (this.buffer !== null) {
+      if (this.rest === null) {
+        this.rest = this.buffer.substring(this.start);
+      } else {
+        this.rest += this.buffer.substring(this.start);
+      }
+    }
+
+    this.buffer = str;
+    this.start = 0;
+  }
   private parseNormal(str: string, code: number, k: number) {
-    this.handleBuffer(str, k);
+    this.end = k;
     if (code === Code.Quote) {
       this.state = ParserState.Ended;
     } else if (code === Code.Escape) {
@@ -66,7 +78,7 @@ export class StringParser {
       if (char !== null) {
         // translation found
         this.rest += char;
-        this.buffer = null;
+        this.start = k + 1;
       } else {
         // reset as if backslash never existed
         this.start = k;
@@ -80,23 +92,8 @@ export class StringParser {
     if (++this.digitCount === 4) {
       this.state = ParserState.Normal;
       this.rest += String.fromCharCode(this.unicode);
-      this.buffer = null;
+      this.start = k + 1;
     }
-  }
-
-  private handleBuffer(str: string, k: number) {
-    if (this.buffer !== str) {
-      if (this.buffer !== null) {
-        if (this.rest === null) {
-          this.rest = this.buffer.substring(this.start);
-        } else {
-          this.rest += this.buffer.substring(this.start);
-        }
-      }
-      this.buffer = str;
-      this.start = k;
-    }
-    this.end = k;
   }
 
   private translate(code: number) {

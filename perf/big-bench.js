@@ -56,7 +56,7 @@ let parsers = [
 async function test() {
   for (let parser of parsers) {
     console.time(parser.name);
-    for (let k = 0; k < 5; ++k) await parser();
+    for (let k = 0; k < 10; ++k) await parser();
     console.timeEnd(parser.name);
   }
 }

@@ -54,6 +54,9 @@ export class Parser {
   }
 
   public push(str: string) {
+    if (this.mode === Mode.PrimitiveKey || this.mode === Mode.PrimitiveString) {
+      // this.stringParser.switchString();
+    }
     for (var k = 0; k < str.length; ++k) {
       this.advance(str, k);
     }

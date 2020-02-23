@@ -4,9 +4,9 @@ Fast incremental (streaming) JSON parser for node
 
 ## performance
 
-About 3.5 times slower than buffering a node stream then parsing it with `JSON.parse`
+At the moment, its about 2.5 times slower than buffering a node stream then parsing it with `JSON.parse`
 
-About 2 times faster than oboe.js
+However, its about 2.5 times faster than oboe.js as well.
 
 Currently works on valid JSON, however it also accepts invalid JSON.
 
@@ -14,9 +14,9 @@ Check out the benchmarks in the perf dir
 
 ```
 $ node perf/big-bench.js
-testJSONParse: 518.266ms
-testOboe: 3800.881ms
-testFastJsonParser: 1679.711ms
+testJSONParse: 1026.993ms
+testOboe: 7270.818ms
+testFastJsonParser: 2626.062ms
 ```
 
 ## usage example
