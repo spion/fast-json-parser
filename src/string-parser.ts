@@ -63,6 +63,7 @@ export class StringParser {
       this.state = ParserState.Ended;
     } else if (code === Code.Escape) {
       this.consolidate();
+      this.start = k + 1;
       this.state = ParserState.Escaped;
     }
   }
@@ -81,6 +82,7 @@ export class StringParser {
       } else {
         // reset as if backslash never existed
         this.start = k;
+        this.end = k + 1;
       }
       this.state = ParserState.Normal;
     }

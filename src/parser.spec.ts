@@ -23,8 +23,10 @@ describe("parser", () => {
           for (let packet of packets) {
             p.push(packet);
           }
+          let v = packets.join("");
+
           let ourParser = p.value;
-          let goodParser = JSON.parse(packets.join(""));
+          let goodParser = JSON.parse(v);
           expect(ourParser).toEqual(goodParser);
         }
       ),
