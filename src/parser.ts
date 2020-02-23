@@ -28,7 +28,7 @@ export class Parser {
   private stack: Queue<any> = new Queue<any>(8);
   private keys: Queue<string> = new Queue<any>(4);
 
-  private value: any;
+  public value: any;
 
   public init(str?: string, k?: number) {
     this.keys = new Queue<any>(4);
@@ -55,7 +55,7 @@ export class Parser {
 
   public push(str: string) {
     if (this.mode === Mode.PrimitiveKey || this.mode === Mode.PrimitiveString) {
-      // this.stringParser.switchString();
+      this.stringParser.switchString(str);
     }
     for (var k = 0; k < str.length; ++k) {
       this.advance(str, k);

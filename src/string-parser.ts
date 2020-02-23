@@ -29,36 +29,35 @@ export class StringParser {
   }
 
   public advance(str: string, k: number) {
-    if (this.state === ParserState.Ended) {
-      return true;
-    }
-    var code = str.charCodeAt(k);
     switch (this.state) {
       case ParserState.Normal:
-        this.parseNormal(str, code, k);
-        break;
+        this.parseNormal(str.charCodeAt(k), k);
+        return false;
+      case ParserState.Ended:
+        return true;
       case ParserState.Escaped:
-        this.parseEscaped(code, k);
-        break;
+        this.parseEscaped(str.charCodeAt(k), k);
+        return false;
       case ParserState.Unicode:
-        this.parseUnicode(code, k);
+        this.parseUnicode(str.charCodeAt(k), k);
+        return false;
     }
-    return false;
   }
 
   public switchString(str: string) {
     if (this.buffer !== null) {
+      let endOfString = this.state === ParserState.Ended ? this.end : this.buffer.length;
       if (this.rest === null) {
-        this.rest = this.buffer.substring(this.start);
+        this.rest = this.buffer.substring(this.start, endOfString);
       } else {
-        this.rest += this.buffer.substring(this.start);
+        this.rest += this.buffer.substring(this.start, endOfString);
       }
     }
-
     this.buffer = str;
-    this.start = 0;
+    this.start = this.end = 0;
   }
-  private parseNormal(str: string, code: number, k: number) {
+
+  private parseNormal(code: number, k: number) {
     this.end = k;
     if (code === Code.Quote) {
       this.state = ParserState.Ended;
@@ -98,16 +97,16 @@ export class StringParser {
 
   private translate(code: number) {
     switch (code) {
-      case Code.B:
-        return "\b";
-      case Code.F:
-        return "\f";
       case Code.N:
         return "\n";
       case Code.R:
         return "\r";
       case Code.T:
         return "\t";
+      case Code.B:
+        return "\b";
+      case Code.F:
+        return "\f";
       default:
         return null;
     }

@@ -5,13 +5,26 @@ describe("parser", () => {
   it("behaves like JSON.parse", () => {
     fc.assert(
       fc.property(
-        fc.object({
-          maxDepth: 5
-        }),
-        o => {
-          let oString = JSON.stringify(o, null, 2);
-          let ourParser = Parser.parse(oString);
-          let goodParser = JSON.parse(oString);
+        fc
+          .object({
+            maxDepth: 5
+          })
+          .map(obj => {
+            let arr = [];
+            let oString = JSON.stringify(obj);
+            for (let k = 0; k < oString.length / 5; ++k) {
+              arr.push(oString.substr(k * 5, 5));
+            }
+            return arr;
+          }),
+        packets => {
+          let p = new Parser();
+          p.init();
+          for (let packet of packets) {
+            p.push(packet);
+          }
+          let ourParser = p.value;
+          let goodParser = JSON.parse(packets.join(""));
           expect(ourParser).toEqual(goodParser);
         }
       ),
