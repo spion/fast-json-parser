@@ -13,7 +13,7 @@ const enum Mode {
   PrimitiveNumber = 4,
   PrimitiveOther = 5,
   Colon = 6,
-  Separator = 7
+  Separator = 7,
 }
 
 function isWhitespace(code: number) {
@@ -47,7 +47,9 @@ export class Parser {
     return new Promise<T>((resolve, reject) => {
       let p = new Parser();
       p.init();
-      stream.on("data", (data: string) => p.push(data));
+      stream.on("data", (data: string | object) =>
+        p.push(typeof data === "string" ? data : data.toString())
+      );
       stream.on("end", () => resolve(p.value));
       stream.on("error", reject);
     });
