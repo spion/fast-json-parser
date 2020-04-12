@@ -1,14 +1,13 @@
 {
   "compilerOptions": {
     "module": "commonjs",
-    "noImplicitAny": true,
     "outDir": "lib/",
     "sourceMap": true,
+    "declaration": true,
     "noLib": false,
     "target": "es2017",
     "skipLibCheck": true,
-    "strict": true,
-    "declaration": false
+    "strict": true
   },
   "include": ["src"]
 }
