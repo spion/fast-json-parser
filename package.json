@@ -1,6 +1,6 @@
 {
   "name": "fast-json-parser",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Fast incremental json parser",
   "main": "lib/parser.js",
   "types": "lib/parser.d.ts",
