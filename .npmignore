@@ -1,0 +1,9 @@
+/lib
+node_modules
+.vscode
+isolate*.log
+yarn.lock
+/prof.txt
+/perf
+/reprofile.sh
+/trace-deopt.sh

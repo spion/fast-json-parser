@@ -24,7 +24,7 @@ testFastJsonParser: 2529.559ms
 A static convenience method is available for node streams:
 
 ```typescript
-import { Parser } from "incremental-json-parser";
+import { Parser } from "fast-json-parser";
 
 async function test() {
   let result = await Parser.parseStream(stream);
@@ -35,7 +35,7 @@ async function test() {
 Or you can use the raw API:
 
 ```typescript
-import { Parser } from "incremental-json-parser";
+import { Parser } from "fast-json-parser";
 
 function parseStream(stream) {
   return new Promise(resolve => {

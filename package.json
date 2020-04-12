@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Fast incremental json parser",
   "main": "lib/parser.js",
+  "types": "lib/parser.d.ts",
   "scripts": {
     "test": "jest"
   },
